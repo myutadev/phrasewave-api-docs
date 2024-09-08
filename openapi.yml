@@ -1,0 +1,216 @@
+openapi: '3.0.3'
+info:
+  title: phrasewave api
+  version: 1.0.0
+  description: API for generating and managing phrases based on given words.
+servers:
+  - url: https://api.phrasewave.com
+tags:
+  - name: languages
+    description: Language operations
+  - name: generate
+    description: Generate phrases from input information
+  - name: myphrases
+    description: Saved words and phrases operations  
+paths:
+  /languages:
+    get:
+      summary: Get language list.
+      tags:
+        - languages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    language_code:
+                      type: string
+                      example: en-US
+                    name:
+                      type: string
+                      example: English (US)
+  /generate:
+    post:
+      summary: Generate phrases
+      tags:
+        - "generate"
+      description: Generate phrases using provided words.
+      requestBody:
+        required: true
+        content: 
+          application/json:
+           schema:
+            type: object
+            properties:
+              language:
+                type: string
+                example: English(US)
+              word1:
+                type: string
+                example: overload
+              word2:
+                type: string
+                example: obsolate
+              word3:
+                type: string
+                example: ""
+              word4:
+                type: string
+                example: ""
+              word5:
+                type: string
+                example: ""
+              context1:
+                type: string
+                example: The power shut off after all the circuits were overloaded.
+              context2:
+                type: string 
+                example: ""
+              context3:
+                type: string 
+                example: ""
+              context4:
+                type: string 
+                example: ""
+              context5:
+                type: string 
+                example: ""
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    usedWords: 
+                      type: array
+                      items:
+                        type: string
+                      example:  ["obsolete", "overload"]
+                    generatedPhrase: 
+                      type: string
+                      example: If we overload the system with obsolate technology, it may fail completely.
+  /myphrases:
+    post:
+      summary: Save phrases and Words
+      tags:
+        - "myphrases"
+      description: Create new My Phrase from Generate Page.
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id: 
+                  type: number
+                  example: 1
+                language_code:
+                  type: string
+                  example: "en-US"
+                words:
+                  type: array
+                  items:
+                    type: string
+                  example: ["overload","system"]
+                phrase:
+                  type: string
+                  example: "The  system  may experience an  overload  during peak hours."
+      responses:
+        '200': 
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    word_ids:
+                      type: array
+                      items:
+                        type: integer
+                      example: [1,2]
+                    phrase_id:
+                      type: number
+                      example: 1
+        '400':
+          description: Bad requestBody
+        '500':
+          description: Internal Server Error
+    delete:
+      summary:  Delete phrases and words.
+      tags:
+        - "myphrases"
+      description: DELETE my phrase and words
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: number
+                  example: 1
+                word_ids:
+                  type: array
+                  items:
+                    type: number
+                  example: [1,2]
+      responses:
+        '200':
+          description: Successful Operation
+    get:
+      summary: Get saved phrases by saved words.
+      tags:
+        - "myphrases"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                          phrases:
+                            type: array
+                            items:
+                              type: string
+                          language: 
+                            type: string
+                example:
+                  message: 'データの取得に成功しました'
+                  data:
+                    study:
+                      phrases: ["study is ...", "the obsolete study.."]
+                      language: "English (US)"
+                    obsolete:
+                      phrases: ["the obsolete study..."]
+                      language: "English (US)"
+        '500':    
+          description: データの取得中にエラーが発生しました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string 
+                    example: 'データの取得中にエラーが発生しました'
+
+
+
